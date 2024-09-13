@@ -1,7 +1,7 @@
 #pragma once
 
 // OS Configuration
-#define DEVICE_NAME            "qewer33's Watch"
+#define DEVICE_NAME            "QPaper"
 #define PREFS_KEY              "qpaper-os"
 
 // Hardware Configuration
@@ -23,11 +23,21 @@
 #define EPD_RESET              17
 #define EPD_BUSY               16
 
+// Battery configuration
+#define BATTERY_MIN_VOLTAGE    2800 // 2.8V but change this to whatever is the minimum value that works
+#define BATTERY_MAX_VOLTAGE    3905 // 3.9V but change this to whatever is the maximum value that works
+
 // Time Configuration
-#define NTP_SERVER1            "pool.ntp.org"
+#define NTP_SERVER1            "time.google.com"
 #define NTP_SERVER2            "time.nist.gov"
-#define GMT_OFFSET_SEC         (3600 * 3)
-#define DAY_LIGHT_OFFSET_SEC   0
+#define NTP_SERVER3            "pool.ntp.org"
+#define GMT_OFFSET_SEC         3600
+#define DAY_LIGHT_OFFSET_SEC   3600
+
+// WiFi Configuration
+#define WIFI_SSID              "wifissid"
+#define WIFI_PASSWD            "wifipassword"
+#define WIFI_RETRIES           60
 
 // Software Functions Configuration
 #define UPDATE_WAKEUP_TIMER_US 60 * 1000000
