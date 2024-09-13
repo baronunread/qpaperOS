@@ -12,12 +12,15 @@
 #include "lib/log.h"
 #include "os_config.h"
 
-enum class WakeupFlag { WAKEUP_INIT, WAKEUP_FULL, WAKEUP_LIGHT };
+enum class WakeupFlag { WAKEUP_INIT, WAKEUP_FULL, WAKEUP_LIGHT, WAKEUP_CHARGING };
 enum class AwakeState { APPS_MENU, IN_APP };
 
 void wakeupInit(WakeupFlag *wakeupType, unsigned int *wakeupCount, GxEPD_Class *display, ESP32Time *rtc, Preferences *preferences);
+void printWelcomeScreen(GxDEPG0150BN *display);
+void setDefaultTime(ESP32Time *rtc, Preferences *preferences);
 void wakeupLight(WakeupFlag *wakeupType, unsigned int *wakeupCount, GxEPD_Class *display, ESP32Time *rtc, Preferences *preferences);
 void wakeupFull(WakeupFlag *wakeupType, unsigned int *wakeupCount, GxEPD_Class *display, ESP32Time *rtc, Preferences *preferences);
+void wakeupCharging(WakeupFlag *wakeupType, unsigned int *wakeupCount, GxEPD_Class *display, ESP32Time *rtc, Preferences *preferences);
 
 void wakeupInitLoop(WakeupFlag *wakeupType, unsigned int sleepTimer, GxEPD_Class *display, ESP32Time *rtc);
 void wakeupLightLoop(WakeupFlag *wakeupType, unsigned int sleepTimer, GxEPD_Class *display, ESP32Time *rtc);
