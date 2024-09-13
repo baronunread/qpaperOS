@@ -46,12 +46,6 @@ volatile SemaphoreHandle_t timerSemaphore;
 
 void ARDUINO_ISR_ATTR onTimer() { xSemaphoreGiveFromISR(timerSemaphore, NULL); }
 
-void WiFiConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
-  log(LogLevel::INFO, "WiFi connected");
-  configTime(GMT_OFFSET_SEC, DAY_LIGHT_OFFSET_SEC, NTP_SERVER1);
-  log(LogLevel::INFO, "Time synchronized from WiFi");
-}
-
 void setup() {
   Serial.begin(115200);
   delay(10);
@@ -64,9 +58,9 @@ void setup() {
   SPI.begin(SPI_SCK, -1, SPI_DIN, EPD_CS);
 
   pinMode(PWR_EN, OUTPUT);
-  pinMode(PIN_MOTOR, OUTPUT);
+  // pinMode(PIN_MOTOR, OUTPUT);
   digitalWrite(PWR_EN, HIGH);
-  digitalWrite(PIN_MOTOR, LOW);
+  // digitalWrite(PIN_MOTOR, LOW);
   pinMode(PIN_KEY, INPUT_PULLUP);
   ButtonConfig *buttonConfig = button.getButtonConfig();
   buttonConfig->setEventHandler(handleButtonEvent);
@@ -80,10 +74,8 @@ void setup() {
   pinMode(BAT_ADC, ANALOG);
   adcAttachPin(BAT_ADC);
   analogReadResolution(12);
-  analogSetWidth(50);
+  // analogSetWidth(50); what does this even do? Not really useful...
   log(LogLevel::SUCCESS, "Hardware pins initiliazed");
-
-  WiFi.onEvent(WiFiConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
 
   timerSemaphore = xSemaphoreCreateBinary();
   uiTimer = timerBegin(0, 80, true);
@@ -95,15 +87,13 @@ void setup() {
   preferences.begin(PREFS_KEY);
   log(LogLevel::SUCCESS, "Preferences initiliazed");
 
-  configTime(GMT_OFFSET_SEC, DAY_LIGHT_OFFSET_SEC, nullptr);
-  log(LogLevel::SUCCESS, "Time configured");
-
   display.init();
   display.setRotation(1);
   log(LogLevel::SUCCESS, "Display initiliazed");
 
   if (digitalRead(PIN_KEY) == 0)
     wakeup = WakeupFlag::WAKEUP_FULL;
+
   log(LogLevel::INFO, "Starting wakeup process...");
 
   switch (wakeup) {
@@ -118,6 +108,10 @@ void setup() {
   case WakeupFlag::WAKEUP_FULL:
     xTaskCreate(buttonUpdateTask, "ButtonUpdateTask", 10000, NULL, 1, NULL);
     wakeupFull(&wakeup, &wakeupCount, &display, &rtc, &preferences);
+    break;
+
+  case WakeupFlag::WAKEUP_CHARGING:
+    wakeupCharging(&wakeup, &wakeupCount, &display, &rtc, &preferences);
     break;
   }
 
@@ -146,7 +140,7 @@ void loop() {
 void buttonUpdateTask(void *pvParameters) {
   while (1) {
     button.check();
-    // vTaskDelay(5);
+    vTaskDelay(5 / portTICK_PERIOD_MS);
   }
   vTaskDelete(NULL);
 }
