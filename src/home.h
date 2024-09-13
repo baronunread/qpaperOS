@@ -11,4 +11,4 @@
 #include "resources/fonts/Outfit_80036pt7b.h"
 #include "resources/icons.h"
 
-void drawHomeUI(GxEPD_Class *display, ESP32Time *rtc, int batteryStatus);
+void drawHomeUI(GxEPD_Class *display, ESP32Time *rtc, int batteryStatus, bool isCharging);
