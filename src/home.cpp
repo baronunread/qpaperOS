@@ -4,7 +4,7 @@ const char *months[] = {"January", "February", "March", "April", "May", "June", 
 
 const char *days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-void drawHomeUI(GxEPD_Class *display, ESP32Time *rtc, int batteryStatus) {
+void drawHomeUI(GxEPD_Class *display, ESP32Time *rtc, int batteryStatus, bool isCharging) {
   display->fillScreen(GxEPD_WHITE);
   display->setTextColor(GxEPD_BLACK);
   display->setTextWrap(false);
@@ -14,7 +14,7 @@ void drawHomeUI(GxEPD_Class *display, ESP32Time *rtc, int batteryStatus) {
   String hoursFiller = rtc->getHour(true) < 10 ? "0" : "";
   String minutesFiller = rtc->getMinute() < 10 ? "0" : "";
   String timeStr = hoursFiller + String(rtc->getHour(true)) + ":" + minutesFiller + String(rtc->getMinute());
-  printCenterString(display, timeStr.c_str(), 100, 125);
+  printCenterString(display, timeStr.c_str(), 98, 125);
 
   // Date
   display->setFont(&Outfit_60011pt7b);
@@ -27,7 +27,10 @@ void drawHomeUI(GxEPD_Class *display, ESP32Time *rtc, int batteryStatus) {
   const unsigned char *icon_battery_small_array[6] = {epd_bitmap_icon_battery_0_small,  epd_bitmap_icon_battery_20_small,
                                                       epd_bitmap_icon_battery_40_small, epd_bitmap_icon_battery_60_small,
                                                       epd_bitmap_icon_battery_80_small, epd_bitmap_icon_battery_100_small};
-  display->drawBitmap(170, 2, icon_battery_small_array[batteryStatus / 20], 28, 28, GxEPD_BLACK);
+  const unsigned char *icon_battery = epd_bitmap_icon_battery_charging_small;
+  if (!isCharging)
+    icon_battery = icon_battery_small_array[batteryStatus / 20];
+  display->drawBitmap(170, 2, icon_battery, 28, 28, GxEPD_BLACK);
 
   // Status icons
   display->drawBitmap(2, 2, icon_wifi_small, 28, 28, GxEPD_BLACK);
